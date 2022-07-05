@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="99a47f92-b76f-4b92-8a63-a1e1951baddf" name="Changes" comment="changing routes">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="99a47f92-b76f-4b92-8a63-a1e1951baddf" name="Changes" comment="adding info into gitignore">
       <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/routes/user_routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -146,7 +143,21 @@
       <option name="project" value="LOCAL" />
       <updated>1657014495288</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="adding gitignore / changing structure">
+      <created>1657019655243</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1657019655243</updated>
+    </task>
+    <task id="LOCAL-00010" summary="adding info into gitignore">
+      <created>1657019948645</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1657019948645</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -171,6 +182,8 @@
     <MESSAGE value="adding new functions:add,remove,show users" />
     <MESSAGE value="adding new routes" />
     <MESSAGE value="changing routes" />
-    <option name="LAST_COMMIT_MESSAGE" value="changing routes" />
+    <MESSAGE value="adding gitignore / changing structure" />
+    <MESSAGE value="adding info into gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="adding info into gitignore" />
   </component>
 </project>
