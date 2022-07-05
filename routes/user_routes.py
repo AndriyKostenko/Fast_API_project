@@ -1,8 +1,6 @@
-from fastapi import FastAPI, HTTPException
-from typing import Optional
-from pydantic import BaseModel
+from fastapi import HTTPException
 
-app = FastAPI()
+from app.main import app
 
 
 users = [
@@ -13,7 +11,6 @@ users = [
      'surname': 'Kostenko',
      'age':14}
 ]
-print(users)
 
 
 @app.get("/")
