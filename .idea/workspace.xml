@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="99a47f92-b76f-4b92-8a63-a1e1951baddf" name="Changes" comment="adding user's info into main.py">
+    <list default="true" id="99a47f92-b76f-4b92-8a63-a1e1951baddf" name="Changes" comment="adding new functions:add,remove,show users">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -116,7 +116,14 @@
       <option name="project" value="LOCAL" />
       <updated>1657008056445</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="adding new functions:add,remove,show users">
+      <created>1657011069718</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1657011069718</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -135,6 +142,7 @@
     <MESSAGE value="adding the starting point" />
     <MESSAGE value="adding requirements.txt" />
     <MESSAGE value="adding user's info into main.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="adding user's info into main.py" />
+    <MESSAGE value="adding new functions:add,remove,show users" />
+    <option name="LAST_COMMIT_MESSAGE" value="adding new functions:add,remove,show users" />
   </component>
 </project>
