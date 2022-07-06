@@ -1,6 +1,8 @@
 from fastapi import HTTPException
+from fastapi import APIRouter
 
-from app.main import app
+
+route = APIRouter(tags=['users'])
 
 
 users = [
@@ -13,12 +15,12 @@ users = [
 ]
 
 
-@app.get("/")
+@route.get("/")
 async def all_users():
     return {'users': users}
 
 
-@app.get('/users/{user_id}')
+@route.get('/users/{user_id}')
 def get_user(user_id: int):
     try:
         return {'user_info': users[user_id]}
@@ -26,7 +28,7 @@ def get_user(user_id: int):
         raise HTTPException(status_code=404, detail='Not found')
 
 
-@app.get("/add_user/")
+@route.get("/add_user/")
 async def add_user(name: str, surname: str, age: int):
     if {'name': name, 'surname': surname, 'age': age} in users:
         print('Such user already exist.')
@@ -35,7 +37,7 @@ async def add_user(name: str, surname: str, age: int):
     return {'name': name, 'surname': surname, 'age': age}
 
 
-@app.get("/delete_user/")
+@route.get("/delete_user/")
 async def delete_user(name: str, surname: str, age: int):
     if {'name': name, 'surname': surname, 'age': age} in users:
         users.remove({'name': name, 'surname': surname, 'age': age})
