@@ -1,9 +1,10 @@
 from fastapi import HTTPException
 from fastapi import APIRouter
 
+from models.user_models import User
+
 
 route = APIRouter(tags=['users'])
-
 
 users = [
     {'name':'Andrew',
@@ -28,7 +29,7 @@ def get_user(user_id: int):
         raise HTTPException(status_code=404, detail='Not found')
 
 
-@route.get("/add_user/")
+@route.post("/add_user/")
 async def add_user(name: str, surname: str, age: int):
     if {'name': name, 'surname': surname, 'age': age} in users:
         print('Such user already exist.')
