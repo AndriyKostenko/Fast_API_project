@@ -1,9 +1,6 @@
 from fastapi import HTTPException
 from fastapi import APIRouter
 
-from models.user_models import User
-
-
 route = APIRouter(tags=['users'])
 
 users = [
