@@ -1,47 +1,53 @@
-from fastapi import HTTPException
+from typing import List
+from fastapi import HTTPException, Depends
 from fastapi import APIRouter
-from app.models.user_models import User
+from sqlalchemy.orm import Session
+
+from app.crud import create_user, get_user_by_email, delete_user_, get_user_, get_users
+from app.database import get_db
+from app.models.schemas import UserBase, DeleteUser, get_current_user
+from app.security import oauth2_scheme
 
 
 route = APIRouter(tags=['users'])
 
-users = [
-    {'name':'Andrew',
-     'surname':'Kostenko',
-     'age':28},
-    {'name':'Max',
-     'surname': 'Kostenko',
-     'age':14}
-]
+
+@route.get('/')
+async def read_users(token: str = Depends(oauth2_scheme)):
+    return {"token": token}
 
 
-@route.get("/")
-async def all_users():
-    return {'users': users}
+@route.get("/users/me")
+async def read_users_me(current_user: UserBase = Depends(get_current_user)):
+    return current_user
 
 
-@route.get('/users/{user_id}')
-def get_user(user_id: int):
-    try:
-        return {'user_info': users[user_id-1]} # to get started from 1
-    except IndexError:
-        raise HTTPException(status_code=404, detail='User not found')
+@route.post("/add_user/", response_model=UserBase)
+async def add_user(user: UserBase, db: Session = Depends(get_db)):
+    db_user = get_user_by_email(db, email=user.email)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email already registered!")
+    return create_user(db=db, user=user)
 
 
-@route.post("/add_user/")
-async def add_user(user: User):
-    print(user)
-    if user in users:
-        raise HTTPException(status_code=409, detail='Such user already exist.')
-    else:
-        users.append(user)
-    return {'users': users}
+#  deleting user but showing an email valid. error.....
+@route.delete("/delete_user/", response_model=DeleteUser)
+async def delete_user(user: DeleteUser, db: Session = Depends(get_db)):
+    db_user = get_user_by_email(db, email=user.email)
+    if not db_user:
+        raise HTTPException(status_code=400, detail="User not found.")
+    return delete_user_(db=db, user=user)
 
 
-@route.delete("/delete_user/")
-async def delete_user(user: User):
-    if user in users:
-        users.remove(user)
-    else:
-        raise HTTPException(status_code=404, detail='User not found.')
-    return {'users': users}
+@route.get("/users/", response_model=List[UserBase])
+async def all_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    users = get_users(db, skip=skip, limit=limit)
+    return users
+
+
+@route.get('/users/{user_id}', response_model=UserBase)
+async def get_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = get_user_(db, user_id=user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user
