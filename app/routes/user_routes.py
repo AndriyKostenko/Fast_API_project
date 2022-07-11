@@ -1,47 +1,68 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
 from fastapi import APIRouter
-from app.models.user_models import User
+from sqlalchemy.orm import Session
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.responses import RedirectResponse
 
+from app.crud import create_user, get_user_by_email, get_users, delete_user_
+from app.database import get_db
+from app.deps import get_current_user
+from app.models.schemas import CreateUser, UserInfo, SystemUser
+from app.security import create_access_token, create_refresh_token, verify_password
 
 route = APIRouter(tags=['users'])
 
-users = [
-    {'name':'Andrew',
-     'surname':'Kostenko',
-     'age':28},
-    {'name':'Max',
-     'surname': 'Kostenko',
-     'age':14}
-]
+
+@route.get('/', response_class=RedirectResponse, include_in_schema=False)
+async def docs():
+    return RedirectResponse(url='/docs')
 
 
-@route.get("/")
-async def all_users():
-    return {'users': users}
+@route.post("/sign_up", summary="Create new user", response_model=UserInfo)
+async def add_user(user: CreateUser, db: Session = Depends(get_db)):
+    db_user = get_user_by_email(db, user_email=user.email)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email already registered!")
+    return create_user(db=db, user=user)
 
 
-@route.get('/users/{user_id}')
-def get_user(user_id: int):
-    try:
-        return {'user_info': users[user_id-1]} # to get started from 1
-    except IndexError:
-        raise HTTPException(status_code=404, detail='User not found')
+@route.post('/login', summary="Create access and refresh tokens for user")
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = get_user_by_email(db, user_email=form_data.username)
+    if not user:
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+    hashed_pass = user.hashed_password
+    if not verify_password(form_data.password, hashed_pass):
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+    return {
+        "access_token": create_access_token(user.email),
+        "refresh_token": create_refresh_token(user.email),
+    }
 
 
-@route.post("/add_user/")
-async def add_user(user: User):
-    print(user)
-    if user in users:
-        raise HTTPException(status_code=409, detail='Such user already exist.')
-    else:
-        users.append(user)
-    return {'users': users}
+@route.get('/me', summary='Get details of currently logged in user', response_model=UserInfo)
+async def get_me(user: SystemUser = Depends(get_current_user)):
+    return user
 
 
-@route.delete("/delete_user/")
-async def delete_user(user: User):
-    if user in users:
-        users.remove(user)
-    else:
-        raise HTTPException(status_code=404, detail='User not found.')
-    return {'users': users}
+@route.get("/users/")
+async def all_users(skip: int = Depends(get_current_user), limit: int = Depends(get_current_user), db: Session = Depends(get_db)):
+    users = get_users(db, skip=skip, limit=limit)
+    return users
+
+
+@route.get('/users/{user_email}', response_model=UserInfo)
+async def get_user(user_email: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    db_user = get_user_by_email(db, user_email=user_email)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user
+
+
+@route.delete("/delete_user/{user_email}", response_model=UserInfo)
+async def delete_user(user_email: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    db_user = get_user_by_email(db, user_email=user_email)
+    if not db_user:
+        raise HTTPException(status_code=400, detail="User not found.")
+    return delete_user_(db=db, user_email=user_email)
+
