@@ -5,11 +5,11 @@ from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import RedirectResponse
 
-from app.crud_user import create_user, get_user_by_email, get_users, delete_user_
-from app.database import get_db
-from app.deps import get_current_user
+from app.db.crud_user import create_user, get_user_by_email, get_users, delete_user_
+from app.db.database import get_db
+from app.security.deps import get_current_user
 from app.models.schemas import UserSignUp, UserInfo
-from app.security import create_access_token, create_refresh_token, verify_password
+from app.security.security import create_access_token, create_refresh_token, verify_password
 
 
 route = APIRouter(tags=['users'])
