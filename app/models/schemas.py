@@ -1,17 +1,42 @@
-from pydantic import BaseModel, EmailStr, constr, validator
+from typing import List
+
+from pydantic import BaseModel, EmailStr, validator
+from pydantic.fields import Field
+from fastapi import HTTPException, Form
 
 
 class UserInfo(BaseModel):
-    name: constr(max_length=20, strip_whitespace=True)
-    surname: constr(max_length=20, strip_whitespace=True)
+    name: str
+    surname: str
     age: int
+    email: EmailStr
 
     class Config:
         orm_mode = True
+        schema_extra = {
+            "example": {
+                "User's name": "Andrew",
+                "User's surname": "Kostenko",
+                "User's age": 28,
+                "email": "email@gmail.com"
+            }
+        }
 
 
-class SystemUser(UserInfo):
-    hashed_password: str
+# bad request
+class UserSignUp(BaseModel):
+    email: EmailStr
+    name: str
+    surname: str
+    age: int
+    password: str = Field(example='password', min_length=8)
+    repeated_password: str = Field(example='password')
+
+    @validator('repeated_password')
+    def validate_password(cls, v, values, **kwargs):
+        if 'password' in values and v != values['password']:
+            raise HTTPException(status_code=404, detail="Your passwords don't match")
+        return v
 
     class Config:
         orm_mode = True
@@ -27,34 +52,45 @@ class TokenPayload(BaseModel):
     exp: int = None
 
 
-class CreateUser(UserInfo):
+class QuizInfo(BaseModel):
     id: int
-    email: EmailStr
-    hashed_password: str
-
-    # @validator("password", pre=True)
-    # def validate_password(cls, hashed_password):
-    #     if len(hashed_password) < 8:
-    #         raise ValueError('Password must be at least 8 characters in length.')
-    #     return hashed_password
+    title: str = Field(example='Title')
+    description: str = Field(example='Description')
+    total_questions: int = Field(example='2')
+    quiz_score: int
+    owner_email: str = Field(example='Enter here an email of the necessary User\'s email.')
 
     class Config:
         orm_mode = True
 
 
-class DeleteUser(BaseModel):
-    email: EmailStr
-
-    class Config:
-        orm_mode = True
-
-
-class GetUser(BaseModel):
+class QuestionInfo(BaseModel):
     id: int
+    question: str = Field(example='How many apples on the three?')
+    owner_id: int = Field(example='Enter here an id of the necessary Quiz\'s id.')
 
     class Config:
         orm_mode = True
 
+
+class AnswerInfo(BaseModel):
+    id: int
+    answers: str = Field(example='Five')
+    correct_answer: str
+    owner_id: int = Field(example='Enter here an id of the necessary Question\'s id')
+
+    class Config:
+        orm_mode = True
+
+
+class Question(BaseModel):
+    question_1_id: int
+    question_2_id: int
+
+
+class Answer(BaseModel):
+    answer_1: str = Form(..., description='(Question will be provided by Front-End.)')
+    answer_2: str = Form(..., description='(Question will be provided by Front-End.)')
 
 
 

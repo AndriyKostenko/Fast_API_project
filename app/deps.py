@@ -5,10 +5,11 @@ from sqlalchemy.orm import Session
 import jwt
 from pydantic import ValidationError
 
-from app.crud import get_user_by_email
+from app.crud_user import get_user_by_email
 from app.database import get_db
 from app.models.schemas import TokenPayload
 from app.security import ALGORITHM, JWT_SECRET_KEY
+
 
 reusable_oauth = OAuth2PasswordBearer(
     tokenUrl="/login",
@@ -16,7 +17,7 @@ reusable_oauth = OAuth2PasswordBearer(
 )
 
 
-async def get_current_user(token: str = Depends(reusable_oauth), db: Session = Depends(get_db)):
+async def get_current_user(token: str = Depends(reusable_oauth), db: Session = Depends(get_db)) -> dict:
     try:
         payload = jwt.decode(
             token, JWT_SECRET_KEY, algorithms=[ALGORITHM]
@@ -46,7 +47,9 @@ async def get_current_user(token: str = Depends(reusable_oauth), db: Session = D
 
     return {'name': user.name,
             'surname': user.surname,
-            'age': user.age}
+            'age': user.age,
+            'email': user.email}
+
 
 
 
