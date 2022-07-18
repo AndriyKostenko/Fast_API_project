@@ -5,11 +5,10 @@ from sqlalchemy.orm import Session
 import jwt
 from pydantic import ValidationError
 
-from app.crud_user import get_user_by_email
-from app.database import get_db
+from app.db.crud_user import get_user_by_email
+from app.db.database import get_db
 from app.models.schemas import TokenPayload
-from app.security import ALGORITHM, JWT_SECRET_KEY
-
+from app.security.security import ALGORITHM, JWT_SECRET_KEY
 
 reusable_oauth = OAuth2PasswordBearer(
     tokenUrl="/login",

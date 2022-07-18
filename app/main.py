@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.routes import user_routes, quiz_routes
-from app.database import Base, engine
+from app.db.database import Base, engine
 
 
 app = FastAPI()
