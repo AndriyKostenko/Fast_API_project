@@ -21,7 +21,7 @@ async def docs():
 
 @route.post("/add_quiz", summary="Create new quiz")
 async def add_quiz(quiz: QuizInfo = Depends(QuizInfo), db: Session = Depends(get_db)):
-    db_quiz = get_quiz_by_title(db, quiz_title=quiz.title)
+    db_quiz = await get_quiz_by_title(db, quiz_title=quiz.title)
     if db_quiz:
         raise HTTPException(status_code=400, detail="Such quiz already registered!")
     return create_quiz(db=db, quiz=quiz)
@@ -29,7 +29,7 @@ async def add_quiz(quiz: QuizInfo = Depends(QuizInfo), db: Session = Depends(get
 
 @route.post("/add_questions", summary="Create new questions")
 async def add_question(question: QuestionInfo = Depends(QuestionInfo), db: Session = Depends(get_db)):
-    db_question = get_question(db, question=question.question)
+    db_question = await get_question(db, question=question.question)
     if db_question:
         raise HTTPException(status_code=400, detail="Such question already registered!")
     return create_question(db=db, question=question)
@@ -37,7 +37,7 @@ async def add_question(question: QuestionInfo = Depends(QuestionInfo), db: Sessi
 
 @route.post("/add_answers", summary="Create new answers")
 async def add_answers(answer: AnswerInfo = Depends(AnswerInfo), db: Session = Depends(get_db)):
-    db_answer = get_answer(db, answer=answer.answers)
+    db_answer = await get_answer(db, answer=answer.answers)
     if db_answer:
         raise HTTPException(status_code=400, detail="Such answer already registered!")
     return create_answer(db=db, answer=answer)
@@ -48,7 +48,7 @@ async def all_quizzes(owner_email: str,
                       current_user: dict = Depends(get_current_user),
                       db: Session = Depends(get_db)):
     if current_user:
-        quizzes = get_quizzes(db, owner_email=owner_email)
+        quizzes = await get_quizzes(db, owner_email=owner_email)
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -62,7 +62,7 @@ async def all_questions(quiz_id: int,
                         current_user: dict = Depends(get_current_user),
                         db: Session = Depends(get_db)):
     if current_user:
-        questions = get_questions_info(db, quiz_id=quiz_id)
+        questions = await get_questions_info(db, quiz_id=quiz_id)
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -76,7 +76,7 @@ async def all_answers(question_id: int,
                       current_user: dict = Depends(get_current_user),
                       db: Session = Depends(get_db)):
     if current_user:
-        answers = get_answers_info(db, question_id=question_id)
+        answers = await get_answers_info(db, question_id=question_id)
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -88,7 +88,7 @@ async def all_answers(question_id: int,
 @route.get('/quizzes/{quiz_title}', summary='Get quiz by title.', response_model=QuizInfo)
 async def get_quiz(quiz_title: str, current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
     if current_user:
-        db_quiz = get_quiz_by_title(db, quiz_title=quiz_title)
+        db_quiz = await get_quiz_by_title(db, quiz_title=quiz_title)
         if db_quiz is None:
             raise HTTPException(status_code=404, detail="Quiz not found.")
     else:
@@ -121,15 +121,15 @@ async def evaluate_quiz(quiz_id: int,
                         db: Session = Depends(get_db)):  # 1 Quiz, 2 ques. for quiz, 3 variants of answers for quest.
 
     if current_user:
-        db_quiz = get_quiz_by_id(db=db, quiz_id=quiz_id)
+        db_quiz = await get_quiz_by_id(db=db, quiz_id=quiz_id)
         if not db_quiz:
             raise HTTPException(status_code=400, detail="Quiz not found.")
 
-        db_questions = get_questions(db=db, quiz_id=quiz_id)
-        db_answer_1 = get_answers(db=db, question_id=questions.question_1_id)
-        db_answer_2 = get_answers(db=db, question_id=questions.question_2_id)
-        db_correct_answers_1 = get_correct_answers(db=db, question_id=questions.question_1_id)
-        db_correct_answers_2 = get_correct_answers(db=db, question_id=questions.question_2_id)
+        db_questions = await get_questions(db=db, quiz_id=quiz_id)
+        db_answer_1 = await get_answers(db=db, question_id=questions.question_1_id)
+        db_answer_2 = await get_answers(db=db, question_id=questions.question_2_id)
+        db_correct_answers_1 = await get_correct_answers(db=db, question_id=questions.question_1_id)
+        db_correct_answers_2 = await get_correct_answers(db=db, question_id=questions.question_2_id)
         user_answers = answers
         list_user_answers = [answers.answer_1, answers.answer_2]
 
@@ -141,7 +141,7 @@ async def evaluate_quiz(quiz_id: int,
             if list_user_answers[ans] == list_correct_answers[ans]:
                 user_points += 1
 
-        saved_points = update_quiz_score(db=db, quiz_id=quiz_id, user_points=user_points)
+        saved_points = await update_quiz_score(db=db, quiz_id=quiz_id, user_points=user_points)
 
     else:
         raise HTTPException(

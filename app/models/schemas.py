@@ -23,7 +23,6 @@ class UserInfo(BaseModel):
         }
 
 
-# bad request
 class UserSignUp(BaseModel):
     email: EmailStr
     name: str
@@ -35,7 +34,7 @@ class UserSignUp(BaseModel):
     @validator('repeated_password')
     def validate_password(cls, v, values, **kwargs):
         if 'password' in values and v != values['password']:
-            raise HTTPException(status_code=404, detail="Your passwords don't match")
+            raise HTTPException(status_code=400, detail="Your passwords don't match")
         return v
 
     class Config:
@@ -75,7 +74,7 @@ class QuestionInfo(BaseModel):
 
 class AnswerInfo(BaseModel):
     id: int
-    answers: str = Field(example='Five')
+    answers: list = Field(example='Five')
     correct_answer: str
     owner_id: int = Field(example='Enter here an id of the necessary Question\'s id')
 

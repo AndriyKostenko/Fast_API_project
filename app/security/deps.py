@@ -36,7 +36,7 @@ async def get_current_user(token: str = Depends(reusable_oauth), db: Session = D
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    user = get_user_by_email(db=db, user_email=token_data.sub)
+    user = await get_user_by_email(db=db, user_email=token_data.sub)
 
     if user is None:
         raise HTTPException(
