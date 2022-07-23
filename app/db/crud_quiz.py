@@ -5,19 +5,16 @@ from app.models.schemas import QuizInfo, QuestionInfo, AnswerInfo
 
 
 async def create_quiz(db: Session, quiz: QuizInfo):
-    db_quiz = Quiz(id=quiz.id,
-                   title=quiz.title,
+    db_quiz = Quiz(title=quiz.title,
                    description=quiz.description,
-                   total_questions=quiz.total_questions,
-                   quiz_score=quiz.quiz_score,
-                   owner_email=quiz.owner_email)
+                   total_questions=quiz.total_questions)
     db.add(db_quiz)
     db.commit()
     db.refresh(db_quiz)
     return db_quiz
 
 
-async def delete_quiz(db: Session, quiz_title: str):
+async def delete_quiz_(db: Session, quiz_title: str):
     quiz = db.query(Quiz).filter(Quiz.title == quiz_title).first()
     db.delete(quiz)
     db.commit()
@@ -34,22 +31,14 @@ async def get_quiz_by_id(db: Session, quiz_id: int):
     return quiz
 
 
-def get_quizzes(db: Session, owner_email: str):
-    return db.query(Quiz).filter(Quiz.owner_email == owner_email).all()
-
-
-async def update_quiz_score(db: Session, quiz_id: int, user_points: int):
-    update = db.query(Quiz).filter(Quiz.id == quiz_id).update({'quiz_score': user_points})
-    db.commit()
-    user_points = db.query(Quiz.quiz_score).filter(Quiz.id == quiz_id).first()
-    return user_points
+async def get_quizzes(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(Quiz).offset(skip).limit(limit).all()
 
 
 # =============================CREATING OF QUESTIONS===================================
 
-
 async def create_question(db: Session, question: QuestionInfo):
-    db_question = Question(question=question.question, owner_id=question.owner_id)
+    db_question = Question(id=question.id, question=question.question, owner_title=question.owner_title)
     db.add(db_question)
     db.commit()
     db.refresh(db_question)
@@ -68,19 +57,20 @@ async def delete_question(db: Session, question: str):
     return db.query(Question).all()
 
 
-async def get_questions_info(db: Session, quiz_id: int):
-    return db.query(Question).filter(Question.owner_id == quiz_id).all()
+async def get_questions_info(db: Session, quiz_title: str):
+    return db.query(Question).filter(Question.owner_title == quiz_title).all()
 
 
-async def get_questions(db: Session, quiz_id: int):
-    return db.query(Question.question).filter(Question.owner_id == quiz_id).all()
+async def get_only_questions_by_quiz_title(db: Session, quiz_title: str):
+    return db.query(Question.question).filter(Question.owner_title == quiz_title).all()
 
 
 # =============================CREATING OF ANSWERS===================================
 
 
 async def create_answer(db: Session, answer: AnswerInfo):
-    db_answer = Answer(answers=answer.answers,
+    db_answer = Answer(id=answer.id,
+                       answers=answer.answers,
                        correct_answer=answer.correct_answer,
                        owner_id=answer.owner_id)
     db.add(db_answer)
@@ -94,9 +84,9 @@ async def get_answer(db: Session, answer: str):
     return answer
 
 
-async def delete_answer(db: Session, answer: str):
-    answer = db.query(Answer).filter(Answer.answers == answer).first()
-    db.delete(answer)
+async def delete_answer(db: Session, answers: str):
+    answers = db.query(Answer).filter(Answer.answers == answers).first()
+    db.delete(answers)
     db.commit()
     return db.query(Answer).all()
 
@@ -111,6 +101,3 @@ async def get_answers(db: Session, question_id: int):
 
 async def get_correct_answers(db: Session, question_id: int):
     return db.query(Answer.correct_answer).filter(Answer.owner_id == question_id).all()
-
-
-

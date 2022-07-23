@@ -20,12 +20,13 @@ async def docs():
     return RedirectResponse(url='/docs')
 
 
-@route.post("/sign_up", summary="Create new user")
-async def add_user(user: UserSignUp = Depends(UserSignUp), db: Session = Depends(get_db)):
+@route.post("/sign_up", summary="Create new user", response_model=UserInfo)
+async def add_user(user: UserSignUp, db: Session = Depends(get_db)):
     db_user = await get_user_by_email(db, user_email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered!")
-    return create_user(db=db, user=user)
+    user = await create_user(db=db, user=user)
+    return user
 
 
 @route.post('/login', summary="Create access and refresh tokens for user")
@@ -82,10 +83,12 @@ async def delete_user(user_email: str, current_user: dict = Depends(get_current_
         db_user = await get_user_by_email(db, user_email=user_email)
         if not db_user:
             raise HTTPException(status_code=400, detail="User not found.")
+        await delete_user_(db=db, user_email=user_email)
+        users = await get_users(db, skip=0, limit=100)
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token expired",
             headers={"WWW-Authenticate": "Bearer"})
-    return delete_user_(db=db, user_email=user_email)
+    return users
 
