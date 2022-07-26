@@ -20,18 +20,19 @@ async def docs():
     return RedirectResponse(url='/docs')
 
 
-@route.post("/sign_up", summary="Create new user")
-async def add_user(user: UserSignUp = Depends(UserSignUp), db: Session = Depends(get_db)):
-    db_user = get_user_by_email(db, user_email=user.email)
+@route.post("/sign_up", summary="Create new user", response_model=UserInfo)
+async def add_user(user: UserSignUp, db: Session = Depends(get_db)):
+    db_user = await get_user_by_email(db, user_email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered!")
-    return create_user(db=db, user=user)
+    user = await create_user(db=db, user=user)
+    return user
 
 
 @route.post('/login', summary="Create access and refresh tokens for user")
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     # form_data.username -> entering your email, not username
-    user = get_user_by_email(db, user_email=form_data.username)
+    user = await get_user_by_email(db, user_email=form_data.username)
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
     hashed_pass = user.hashed_password
@@ -53,7 +54,7 @@ async def all_users(skip: int = 0, limit: int = 100,
                     current_user: dict = Depends(get_current_user),
                     db: Session = Depends(get_db)):
     if current_user:
-        users = get_users(db, skip=skip, limit=limit)
+        users = await get_users(db, skip=skip, limit=limit)
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -65,7 +66,7 @@ async def all_users(skip: int = 0, limit: int = 100,
 @route.get('/users/{user_email}', summary='Get user by email.', response_model=UserInfo)
 async def get_user(user_email: str, current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
     if current_user:
-        db_user = get_user_by_email(db, user_email=user_email)
+        db_user = await get_user_by_email(db, user_email=user_email)
         if db_user is None:
             raise HTTPException(status_code=404, detail="User not found")
     else:
@@ -79,13 +80,15 @@ async def get_user(user_email: str, current_user: dict = Depends(get_current_use
 @route.delete("/delete_user/{user_email}", summary='Delete user by email.', response_model=List[UserInfo])
 async def delete_user(user_email: str, current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
     if current_user:
-        db_user = get_user_by_email(db, user_email=user_email)
+        db_user = await get_user_by_email(db, user_email=user_email)
         if not db_user:
             raise HTTPException(status_code=400, detail="User not found.")
+        await delete_user_(db=db, user_email=user_email)
+        users = await get_users(db, skip=0, limit=100)
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token expired",
             headers={"WWW-Authenticate": "Bearer"})
-    return delete_user_(db=db, user_email=user_email)
+    return users
 

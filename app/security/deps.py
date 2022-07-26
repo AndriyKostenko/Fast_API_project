@@ -23,12 +23,12 @@ async def get_current_user(token: str = Depends(reusable_oauth), db: Session = D
         )
         token_data = TokenPayload(**payload)
 
-        if datetime.fromtimestamp(token_data.exp) < datetime.now():
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token expired",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+        # if datetime.fromtimestamp(token_data.exp) < datetime.now():
+        #     raise HTTPException(
+        #         status_code=status.HTTP_401_UNAUTHORIZED,
+        #         detail="Token expired",
+        #         headers={"WWW-Authenticate": "Bearer"},
+        #     )
     except(jwt.PyJWTError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -36,7 +36,7 @@ async def get_current_user(token: str = Depends(reusable_oauth), db: Session = D
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    user = get_user_by_email(db=db, user_email=token_data.sub)
+    user = await get_user_by_email(db=db, user_email=token_data.sub)
 
     if user is None:
         raise HTTPException(

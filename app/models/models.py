@@ -1,32 +1,34 @@
-from sqlalchemy import ForeignKey, Column, Integer, String, Text
+from sqlalchemy import Sequence, ForeignKey, Column, Integer, String, Text, DateTime
 from app.db.database import Base
 from sqlalchemy.orm import relationship
+from sqlalchemy.schema import Sequence
 
 
 class User(Base):
     __tablename__ = 'users'
 
-    id = Column(Integer, autoincrement=True, index=True)
+    seq = Sequence('users_id_seq', start=1)
+
+    id = Column('id', Integer, seq,  server_default=seq.next_value())
     name = Column(String, unique=False)
     surname = Column(String, nullable=False)
     age = Column(Integer, nullable=False)
     email = Column(String, primary_key=True, unique=True, nullable=False)
     hashed_password = Column(String, unique=True, nullable=False)
-
-    quizzes = relationship('Quiz', back_populates='owner')
+    last_quiz_done = Column(String, nullable=True)
+    last_quiz_score = Column(Integer, nullable=True)
+    last_quiz_done_date = Column(String, nullable=True)
 
 
 class Quiz(Base):
     __tablename__ = 'quizzes'
 
-    id = Column(Integer, primary_key=True, autoincrement=True, index=True)
+    seq = Sequence('quizzes_id_seq', start=1)
+
+    id = Column('id', Integer, seq, server_default=seq.next_value(), primary_key=True)
     title = Column(String, unique=True, nullable=False)
     description = Column(String, nullable=False)
     total_questions = Column(Integer, nullable=False)
-    quiz_score = Column(Integer, nullable=True)
-    owner_email = Column(String, ForeignKey('users.email'))
-
-    owner = relationship('User', back_populates='quizzes')
 
     questions = relationship('Question', back_populates='owner')
 
@@ -36,7 +38,7 @@ class Question(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     question = Column(String, nullable=False)
-    owner_id = Column(Integer, ForeignKey('quizzes.id'))
+    owner_title = Column(String, ForeignKey('quizzes.title'))
 
     owner = relationship('Quiz', back_populates='questions')
 

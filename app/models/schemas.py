@@ -1,8 +1,11 @@
-from typing import List
+from typing import Optional
 
 from pydantic import BaseModel, EmailStr, validator
 from pydantic.fields import Field
 from fastapi import HTTPException, Form
+from faker import Faker
+
+fake = Faker()
 
 
 class UserInfo(BaseModel):
@@ -10,20 +13,14 @@ class UserInfo(BaseModel):
     surname: str
     age: int
     email: EmailStr
+    last_quiz_done: str = None
+    last_quiz_score: int = None
+    last_quiz_done_date: str = None
 
     class Config:
         orm_mode = True
-        schema_extra = {
-            "example": {
-                "User's name": "Andrew",
-                "User's surname": "Kostenko",
-                "User's age": 28,
-                "email": "email@gmail.com"
-            }
-        }
 
 
-# bad request
 class UserSignUp(BaseModel):
     email: EmailStr
     name: str
@@ -35,7 +32,7 @@ class UserSignUp(BaseModel):
     @validator('repeated_password')
     def validate_password(cls, v, values, **kwargs):
         if 'password' in values and v != values['password']:
-            raise HTTPException(status_code=404, detail="Your passwords don't match")
+            raise HTTPException(status_code=400, detail="Your passwords don't match")
         return v
 
     class Config:
@@ -53,12 +50,9 @@ class TokenPayload(BaseModel):
 
 
 class QuizInfo(BaseModel):
-    id: int
     title: str = Field(example='Title')
     description: str = Field(example='Description')
     total_questions: int = Field(example='2')
-    quiz_score: int
-    owner_email: str = Field(example='Enter here an email of the necessary User\'s email.')
 
     class Config:
         orm_mode = True
@@ -67,7 +61,7 @@ class QuizInfo(BaseModel):
 class QuestionInfo(BaseModel):
     id: int
     question: str = Field(example='How many apples on the three?')
-    owner_id: int = Field(example='Enter here an id of the necessary Quiz\'s id.')
+    owner_title: str = Field(example='Enter here the title of the necessary Quiz.')
 
     class Config:
         orm_mode = True
@@ -83,14 +77,15 @@ class AnswerInfo(BaseModel):
         orm_mode = True
 
 
-class Question(BaseModel):
+class Questions(BaseModel):
     question_1_id: int
     question_2_id: int
 
 
-class Answer(BaseModel):
+class Answers(BaseModel):
     answer_1: str = Form(..., description='(Question will be provided by Front-End.)')
     answer_2: str = Form(..., description='(Question will be provided by Front-End.)')
 
 
-
+class QuizTitle(BaseModel):
+    quiz_title: str
