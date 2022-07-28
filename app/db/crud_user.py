@@ -26,8 +26,8 @@ async def get_user_by_email(db: Session, user_email: str):
     return user
 
 
-async def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(User).offset(skip).limit(limit).all()
+async def get_users(db: Session):
+    return db.query(User).all()
 
 
 async def update_last_quiz_score(db: Session, user_email: str, user_points: int):

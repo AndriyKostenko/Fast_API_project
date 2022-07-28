@@ -50,11 +50,10 @@ async def get_me(user: UserInfo = Depends(get_current_user)):
 
 
 @route.get("/users/", summary='Details of all users', response_model=List[UserInfo])
-async def all_users(skip: int = 0, limit: int = 100,
-                    current_user: dict = Depends(get_current_user),
+async def all_users(current_user: dict = Depends(get_current_user),
                     db: Session = Depends(get_db)):
     if current_user:
-        users = await get_users(db, skip=skip, limit=limit)
+        users = await get_users(db)
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -84,7 +83,7 @@ async def delete_user(user_email: str, current_user: dict = Depends(get_current_
         if not db_user:
             raise HTTPException(status_code=400, detail="User not found.")
         await delete_user_(db=db, user_email=user_email)
-        users = await get_users(db, skip=0, limit=100)
+        users = await get_users(db)
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

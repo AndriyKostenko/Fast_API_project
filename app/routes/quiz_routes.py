@@ -1,3 +1,4 @@
+import datetime
 from typing import List
 from fastapi import HTTPException, Depends, status, APIRouter
 from sqlalchemy.orm import Session
@@ -149,7 +150,7 @@ async def evaluate_quiz(quiz_title: QuizTitle,
                                                      quiz_title=quiz_title.quiz_title)
         last_quiz_done_date = await update_last_quiz_done_date(db=db,
                                                                user_email=current_user['email'],
-                                                               quiz_date=strftime("%Y-%m-%d %H:%M:%S", gmtime()))
+                                                               quiz_date=str(datetime.datetime.now()))
 
     else:
         raise HTTPException(
