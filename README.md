@@ -30,5 +30,6 @@ To start the tests u have to:
 3) Start tests:
     $ python -m pytest
 
+![Screenshot from 2022-07-30 17-20-31](https://user-images.githubusercontent.com/91188777/181919480-cccf19b3-b297-4411-9edb-75600426686a.png)
 
-![Screenshot from 2022-07-30 17-20-31](https://user-images.githubusercontent.com/91188777/181918998-c185f787-37b3-4142-94cf-3bfbe547ab33.png)
+
