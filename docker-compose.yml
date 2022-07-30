@@ -1,0 +1,81 @@
+# Use postgres/example user/password credentials
+version: '3.1'
+
+services:
+  app:
+    build: .
+    volumes:
+      - .:/code
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+      - db_test
+
+
+
+  db:
+    container_name: postgres_container
+    image: postgres
+    environment:
+      POSTGRES_DB: 'postgres.db'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'changeme'
+    volumes:
+      - postgres:/var/lib/postgresql/main
+    restart: unless-stopped
+
+
+  db_test:
+    container_name: postgres_container_test
+    image: postgres
+    environment:
+      POSTGRES_DB: 'postgres.db.test'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'changeme'
+    volumes:
+      - postgres:/var/lib/postgresql/test
+    restart: unless-stopped
+
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: 'pgadmin4@pgadmin.org'
+      PGADMIN_DEFAULT_PASSWORD: 'admin'
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+
+networks:
+  postgres:
+    driver: bridge
+
+
+volumes:
+    postgres:
+    pgadmin:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
