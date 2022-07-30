@@ -17,7 +17,7 @@ class User(Base):
     hashed_password = Column(String, unique=True, nullable=False)
     last_quiz_done = Column(String, nullable=True)
     last_quiz_score = Column(Integer, nullable=True)
-    last_quiz_done_date = Column(String, nullable=True)
+    last_quiz_done_date = Column(DateTime, nullable=True)
 
 
 class Quiz(Base):

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import BaseModel, EmailStr, validator
 from pydantic.fields import Field
 from fastapi import HTTPException, Form
