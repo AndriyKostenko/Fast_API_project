@@ -1,5 +1,16 @@
 # Fast_API_Quiz_project
 
+Hello, this is my Quiz-project based on the following technologies:
+
+ - Python3
+ - FastApi
+ - PostgreSQL
+ - Docker
+ - Docker-Compose
+ - AWS + GitHubActions (for deploying)
+
+
+
 To start project through the Docker you have to:
 
 1) Build the Docker Images with:
@@ -20,3 +31,4 @@ To start the tests u have to:
     $ python -m pytest
 
 
+![Screenshot from 2022-07-30 17-20-31](https://user-images.githubusercontent.com/91188777/181918998-c185f787-37b3-4142-94cf-3bfbe547ab33.png)
