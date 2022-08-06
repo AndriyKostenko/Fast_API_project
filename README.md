@@ -21,8 +21,7 @@ Hello, this is my Quiz-project based on the following technologies:
 
 4) pip3 install -r requirements.txt (installing all the requirements for the following project)
  
-5) Build the Docker Image with Docker containers:
-    $ docker-compose up --build
+5) docker-compose up --build (Build the Docker Image with Docker containers)
 
 (Use 'sudo' in case of working on Linux)
 
