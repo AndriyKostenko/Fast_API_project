@@ -16,12 +16,12 @@ Hello, this is my Quiz-project based on the following technologies:
 1) git clone https://github.com/AndriyKostenko/Fast_API_project.git (copy the project)
 
 2) python3 -m venv venv (installing virtual env.)
- 
 
-1) Build the Docker Images with:
-    $ docker build -t db .
-    $ docker build -t db_test .
-2) Run containers based on your Images:
+3) source venv/bin/activate (activate virtual env.)
+
+4) pip3 install -r requirements.txt (installing all the requirements for the following project)
+ 
+5) Build the Docker Image with Docker containers:
     $ docker-compose up --build
 
 (Use 'sudo' in case of working on Linux)
