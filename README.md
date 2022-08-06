@@ -11,7 +11,9 @@ Hello, this is my Quiz-project based on the following technologies:
 
 
 
-To start project through the Docker you have to:
+# To start project through the Docker you have to:
+
+1) git clone 
 
 1) Build the Docker Images with:
     $ docker build -t db .
