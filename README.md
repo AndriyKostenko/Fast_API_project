@@ -13,7 +13,10 @@ Hello, this is my Quiz-project based on the following technologies:
 
 # To start project through the Docker you have to:
 
-1) git clone 
+1) git clone https://github.com/AndriyKostenko/Fast_API_project.git (copy the project)
+
+2) python3 -m venv venv (installing virtual env.)
+ 
 
 1) Build the Docker Images with:
     $ docker build -t db .
