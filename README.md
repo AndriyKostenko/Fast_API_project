@@ -25,7 +25,7 @@ Hello, this is my Quiz-project based on the following technologies:
 
 (Use 'sudo' in case of working on Linux)
 
-To start the tests u have to:
+# To start the tests u have to:
 
 1) Run containers based on your Images:
     $ docker-compose up --build
